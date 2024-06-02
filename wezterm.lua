@@ -27,7 +27,6 @@ config.foreground_text_hsb = {
 }
 
 -- Set the title bar depending on the system, if it;
-config.window_decorations = "RESIZE"
 config.window_padding = {
 	left = "0 cell",
 	right = "0 cell",
