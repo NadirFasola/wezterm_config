@@ -2,12 +2,31 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local config = wezterm.config_builder()
+local target = wezterm.target_triple
+
+-- Some necessary configuration for wezterm to work on linux
+-- and to set the correct GPU acceleration front end
+config.enable_wayland = false
+config.front_end = "WebGpu"
+
+-- If on Windows, set WSL2 as the default target when
+-- opening Wezterm
+if target:find("windows") ~= nil then
+	config.default_domain = "WSL:Ubuntu-22.04"
+end
 
 -- Set the initial size of the terminal
-config.initial_cols = 128
-config.initial_rows = 48
+config.initial_cols = 96
+config.initial_rows = 32
 
--- Set the title bar
+-- Set foreground to be brighter than background
+config.foreground_text_hsb = {
+	hue = 1.0,
+	saturation = 1.2,
+	brightness = 1.5,
+}
+
+-- Set the title bar depending on the system, if it;
 config.window_decorations = "RESIZE"
 config.window_padding = {
 	left = "0 cell",
@@ -17,17 +36,18 @@ config.window_padding = {
 }
 config.window_frame = {
 	font = wezterm.font({
-		family = "Rotobo",
+		family = "Roboto",
 		weight = "Bold",
 	}),
 	font_size = 12,
 }
 
--- Hide tab bar + don't show its index
+-- Hide tab bar at the bottom + show its index
 config.tab_bar_at_bottom = true
 config.hide_tab_bar_if_only_one_tab = false
 config.show_tab_index_in_tab_bar = true
 config.tab_and_split_indices_are_zero_based = false
+-- Display the retro tab bar for customization
 config.use_fancy_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
 config.tab_max_width = 64
@@ -36,10 +56,11 @@ config.tab_max_width = 64
 
 -- set background opacity to something less than 1
 config.color_scheme = "Monokai Pro Ristretto (Gogh)"
--- If we are running Linux, set some transparency
-if wezterm.target_triple:find("linux") ~= nil then
+-- If we are running Linux, set some transparency...
+if target:find("linux") ~= nil then
 	config.window_background_opacity = 0.9
-elseif wezterm.target_triple:find("windows") ~= nil then
+-- ...but if we're running Windows, set background blur
+elseif target:find("windows") ~= nil then
 	config.window_background_opacity = 0
 	config.win32_system_backdrop = "Tabbed"
 end
